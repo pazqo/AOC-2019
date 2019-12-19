@@ -110,12 +110,13 @@ class Intcode:
         self.rel_base += i_
         return 2
 
-    def input(self, x=None):
-        if x is not None:
-            self.inputs.append(x)
+    def input(self, x):
+        self.inputs.append(x)
         return self
 
-    def run(self):
+    def run(self, x=None):
+        if x is not None:
+            self.input(x)
         list(self)
         return self.res[-1]
 
@@ -132,6 +133,8 @@ class Intcode:
                 i1, i2, out = [self.xs[x] for x in range(self.pos+1,self.pos+4)]
                 self.pos += self.op2(i1, i2, out, params)
             elif op == 3:
+                if len(self.inputs) == 0:
+                    raise StopIteration
                 x = self.inputs.pop(0)
                 i_ = self.xs[self.pos+1]
                 self.pos += self.op3(x, i_, params)
